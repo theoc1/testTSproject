@@ -1,4 +1,4 @@
-import {Router} from "express";
+import { Router } from 'express';
 
 
 export const Get = (path: string) => {
@@ -7,7 +7,6 @@ export const Get = (path: string) => {
 
 		target.router.get(path, async(req, res) => {
 			try {
-				console.log(req.params);
 				const result = await descriptor.value(req.params.id);
 				res.send(result);
 			} catch(error) {
@@ -15,4 +14,20 @@ export const Get = (path: string) => {
 			}
 		})
 	}
-}
+};
+
+export const Post = (path: string) => {
+	return (target, key, descriptor) => {
+		if (!target.router) target.router = Router();
+
+		target.router.post(path, async (req, res) => {
+			try {
+				const result = await descriptor.value(req.body);
+				return res.send(result);
+			} catch(error) {
+				res.status(error.status);
+				return res.send(error.message);
+			}
+		});
+	}
+};

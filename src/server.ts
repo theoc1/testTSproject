@@ -1,4 +1,6 @@
 import express, { Express, Router } from 'express';
+import fs from 'fs';
+import bodyParser from 'body-parser';
 
 import Api from './controllers/api';
 
@@ -19,12 +21,18 @@ export default class Server {
 	};
 
 	private config() {
-		const Controller = require(`./${this.ctrlPath}/users.controller`).default;
-
-		this.app.use('/', (req, res) => {
-			const ctrl = new Controller(req, res);
-			ctrl.router(req, res);
-		});
+		this.app.use(bodyParser.json());
+		// not perfect, i know. use 'path' package
+		fs.readdirSync(`${__dirname}/${this.ctrlPath}`)
+			// change to _.endsWith()
+			.filter((file) => file.includes('.controller.js'))
+			.forEach((file) => {
+				const Controller = require(`./${this.ctrlPath}/${file}`).default;
+				this.app.use('/', (req, res) => {
+					const ctrl = new Controller(req, res);
+					ctrl.router(req, res);
+				});
+			});
 	}
 
 	private run(): Promise<void> {
