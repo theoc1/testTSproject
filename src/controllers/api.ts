@@ -1,19 +1,24 @@
 import { Router, Request, Response } from 'express';
 
 export default class Api {
-	private request: Request;
-	private response: Response;
-
 	public body: {};
 	public params: {};
 	public query: string;
 
-	constructor(req: Request, res: Response) {
-		this.request = req;
-		this.response = res;
+	public req: Request;
+	public res: Response;
 
+	public router: Router;
+
+
+	public getRouterRunner(req: Request, res: Response) {
 		this.body = req.body;
 		this.params = req.params;
 		this.query = req.query;
+
+		this.req = req;
+		this.res = res;
+
+		return () => this.router(this.req, this.res);
 	}
 }

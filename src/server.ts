@@ -20,7 +20,7 @@ export default class Server {
 		this.app = express();
 	};
 
-	private config() {
+	public config() {
 		this.app.use(bodyParser.json());
 		// not perfect, i know. use 'path' package
 		fs.readdirSync(`${__dirname}/${this.ctrlPath}`)
@@ -28,9 +28,10 @@ export default class Server {
 			.filter((file) => file.includes('.controller.js'))
 			.forEach((file) => {
 				const Controller = require(`./${this.ctrlPath}/${file}`).default;
-				this.app.use('/', (req, res) => {
-					const ctrl = new Controller(req, res);
-					ctrl.router(req, res);
+				const ctrl = new Controller();
+				this.app.use(Controller.path, (req, res) => {
+					const routerRunner = ctrl.getRouterRunner(req, res);
+					routerRunner();
 				});
 			});
 	}
@@ -44,8 +45,10 @@ export default class Server {
 		})
 	}
 
-	public async start(): Promise<void> {
+	public async start(): Promise<Express> {
 		this.config();
 		await this.run();
+
+		return this.app;
 	}
 }

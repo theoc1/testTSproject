@@ -7,7 +7,7 @@ export const Get = (path: string) => {
 
 		target.router.get(path, async(req, res) => {
 			try {
-				const result = await descriptor.value(req.params.id);
+				const result = await descriptor.value(req.params.id || null);
 				res.send(result);
 			} catch(error) {
 				res.send(error);

@@ -5,14 +5,10 @@ import { Get, Post } from '../lib/decorators';
 import knex from '../lib/db';
 
 export default class UsersController extends Api {
+	// FIXME: we can use controller file name in server.ts
 	static path: string = '/users';
 
-	constructor(req: Request, res: Response) {
-		super(req, res);
-	}
-
-
-	@Get('/users/:id')
+	@Get('/:id')
 	private async getUserById(id: number): Promise<object> {
 		const user = await knex
 			.select('*')
@@ -24,7 +20,7 @@ export default class UsersController extends Api {
 		return Promise.resolve(user[0]);
 	}
 
-	@Post('/users')
+	@Post('/')
 	private async createUser(data: object): Promise<object> {
 		let user;
 		try {
